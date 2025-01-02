@@ -11,7 +11,6 @@ import { CourseProgressButton } from "./_components/course-progress-button";
 import { getChapter } from "@/actions/get-chapter";
 import VideoPlayer from "./_components/video-player";
 
-
 const ChapterIdPage = async ({
   params,
 }: {
@@ -41,10 +40,9 @@ const ChapterIdPage = async ({
   }
 
   const isLocked = !purchase;
-  const completeOnEnd = !!purchase && !userProgress?.isCompleted;
 
   return (
-    <div>
+    <div className="relative">
       {userProgress?.isCompleted && (
         <Banner variant="success" label="You already completed this chapter." />
       )}
@@ -54,17 +52,22 @@ const ChapterIdPage = async ({
           label="You need to Enroll this course to watch this chapter."
         />
       )}
-      <div className="flex flex-col max-w-4xl mx-auto pb-20">
+
+      {/* Blur Container */}
+      <div
+        className={`flex flex-col max-w-4xl mx-auto pb-20 ${
+          isLocked ? "filter blur-sm pointer-events-none" : ""
+        }`}
+      >
         <div className="p-4">
-         
-           {/* <VideoPlayer
+          <VideoPlayer
             chapterId={params.chapterId}
             title={chapter.title}
             courseId={params.courseId}
             nextChapterId={nextChapter?.id}
             isLocked={isLocked}
             videoUrl={chapter.videoUrl}
-          />  */}
+          />
         </div>
         <div>
           <div className="p-4 flex flex-col md:flex-row items-center justify-between">
@@ -76,9 +79,7 @@ const ChapterIdPage = async ({
                 nextChapterId={nextChapter?.id}
                 isCompleted={!!userProgress?.isCompleted}
               />
-            ) : (
-              <CourseEnrollButton courseId={params.courseId}/>
-            )}
+            ) : null}
           </div>
           <Separator />
           <div>
@@ -104,6 +105,13 @@ const ChapterIdPage = async ({
           )}
         </div>
       </div>
+
+      {/* Enroll Button (Outside Blur) */}
+      {isLocked && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <CourseEnrollButton courseId={params.courseId} />
+        </div>
+      )}
     </div>
   );
 };
